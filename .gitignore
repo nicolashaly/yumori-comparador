@@ -1,0 +1,17 @@
+data/
+__pycache__/
+frontend/node_modules/
+frontend/.next/
+frontend/*.tsbuildinfo
+.env*
+!frontend/.env.example
+frontend/.npm-cache/
+
+.claude/settings.local.json
+
+# Obsidian: estado local del workspace
+.obsidian/workspace*.json
+.obsidian/cache
+
+# Graphify: grafo local, se regenera con `graphify update .`
+graphify-out/

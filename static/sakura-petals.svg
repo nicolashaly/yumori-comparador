@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 520">
+<!-- Pétalos sueltos cayendo, en un mosaico que se repite por toda la pantalla (fondo decorativo de Yumori). Ninguno toca el borde,
+     así el mosaico no muestra cortes. Pocos y separados a propósito: baja densidad visual. -->
+<defs>
+  <linearGradient id="pg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#F3B4C6"/><stop offset="1" stop-color="#FCEAF0"/></linearGradient>
+  <path id="p" d="M0 0C-6-3-9-11-6-17C-4.5-20-2-21 0-18.5C2-21 4.5-20 6-17C9-11 6-3 0 0Z" fill="url(#pg)"/>
+</defs>
+<use xlink:href="#p" href="#p" transform="translate(70 90) rotate(35) scale(1.1)"/>
+<use xlink:href="#p" href="#p" transform="translate(232 62) rotate(-50) scale(.8)"/>
+<use xlink:href="#p" href="#p" transform="translate(412 124) rotate(110) scale(1)"/>
+<use xlink:href="#p" href="#p" transform="translate(142 252) rotate(200) scale(.7)"/>
+<use xlink:href="#p" href="#p" transform="translate(330 232) rotate(-20) scale(1.2)"/>
+<use xlink:href="#p" href="#p" transform="translate(462 334) rotate(70) scale(.85)"/>
+<use xlink:href="#p" href="#p" transform="translate(92 424) rotate(150) scale(1)"/>
+<use xlink:href="#p" href="#p" transform="translate(262 402) rotate(-80) scale(.75)"/>
+<use xlink:href="#p" href="#p" transform="translate(400 470) rotate(25) scale(.9)"/>
+</svg>
