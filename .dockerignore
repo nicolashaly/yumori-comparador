@@ -1,0 +1,20 @@
+# Contexto de construcción de la API (Dockerfile de la raíz). El Dockerfile copia solo lo que necesita;
+# esto evita además enviar al demonio de Docker la base, el frontend y el resto.
+.git
+.github
+.claude
+.atl
+.codegraph
+.obsidian
+odd
+data
+docs
+tests
+frontend
+graphify-out
+__pycache__
+*.pyc
+.env*
+*.db
+*.db-*
+*.log

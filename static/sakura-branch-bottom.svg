@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 560 420">
+<!-- Rama de cerezo que sube desde la esquina inferior derecha (fondo decorativo de Yumori). Composición propia, no espejada. -->
+<defs>
+  <linearGradient id="pg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#F0A9BE"/><stop offset=".55" stop-color="#F8CDD9"/><stop offset="1" stop-color="#FDF0F4"/></linearGradient>
+  <path id="petal" d="M0 0C-6-3-9-11-6-17C-4.5-20-2-21 0-18.5C2-21 4.5-20 6-17C9-11 6-3 0 0Z"/>
+  <g id="f">
+    <use xlink:href="#petal" href="#petal" fill="url(#pg)"/>
+    <use xlink:href="#petal" href="#petal" fill="url(#pg)" transform="rotate(72)"/>
+    <use xlink:href="#petal" href="#petal" fill="url(#pg)" transform="rotate(144)"/>
+    <use xlink:href="#petal" href="#petal" fill="url(#pg)" transform="rotate(216)"/>
+    <use xlink:href="#petal" href="#petal" fill="url(#pg)" transform="rotate(288)"/>
+    <circle r="3.4" fill="#E99BB2"/>
+    <g stroke="#D4829B" stroke-width=".8" stroke-linecap="round">
+      <path d="M0 0L4 -5.5M0 0L6.4 1.8M0 0L0 6.8M0 0L-6.4 1.8M0 0L-4 -5.5"/>
+    </g>
+    <g fill="#C26C87"><circle cx="4" cy="-5.5" r="1"/><circle cx="6.4" cy="1.8" r="1"/><circle cx="0" cy="6.8" r="1"/><circle cx="-6.4" cy="1.8" r="1"/><circle cx="-4" cy="-5.5" r="1"/></g>
+  </g>
+  <g id="bud"><path d="M0 4C-4 0-4-7 0-11C4-7 4 0 0 4Z" fill="#F2A3BA"/><path d="M-3 3L0 6L3 3" fill="none" stroke="#8E7A6E" stroke-width="1.4" stroke-linecap="round"/></g>
+</defs>
+<g fill="none" stroke="#7B6660" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M580 430C520 400 470 360 430 310" stroke-width="11"/>
+  <path d="M430 310C400 272 370 250 320 232" stroke-width="7.5"/>
+  <path d="M320 232C285 220 255 222 220 230" stroke-width="4.5"/>
+  <path d="M220 230C200 234 185 244 172 258" stroke-width="2.2"/>
+  <path d="M468 358C470 320 490 290 520 270" stroke-width="4.5"/>
+  <path d="M492 296C505 280 506 262 500 246" stroke-width="2.2"/>
+  <path d="M400 272C385 240 380 212 386 184" stroke-width="3.5"/>
+  <path d="M300 226C282 245 262 256 238 260" stroke-width="3"/>
+</g>
+<use xlink:href="#f" href="#f" transform="translate(520 270) rotate(-10) scale(1.15)"/>
+<use xlink:href="#f" href="#f" transform="translate(500 246) rotate(25) scale(.8)"/>
+<use xlink:href="#f" href="#f" transform="translate(440 330) rotate(-25) scale(.85)"/>
+<use xlink:href="#f" href="#f" transform="translate(386 184) rotate(25) scale(1.1)"/>
+<use xlink:href="#f" href="#f" transform="translate(371 207) rotate(-5) scale(.7)"/>
+<use xlink:href="#f" href="#f" transform="translate(345 245) rotate(15) scale(.7)"/>
+<use xlink:href="#f" href="#f" transform="translate(238 260) rotate(-20) scale(1)"/>
+<use xlink:href="#f" href="#f" transform="translate(257 243) rotate(10) scale(.75)"/>
+<use xlink:href="#f" href="#f" transform="translate(220 230) rotate(0) scale(.8)"/>
+<use xlink:href="#f" href="#f" transform="translate(172 258) rotate(30) scale(.95)"/>
+<use xlink:href="#bud" href="#bud" transform="translate(536 262) rotate(40)"/>
+<use xlink:href="#bud" href="#bud" transform="translate(395 166) rotate(10)"/>
+<use xlink:href="#bud" href="#bud" transform="translate(158 270) rotate(-60)"/>
+<use xlink:href="#bud" href="#bud" transform="translate(205 220) rotate(-15)"/>
+<g opacity=".85">
+  <use xlink:href="#petal" href="#petal" fill="url(#pg)" transform="translate(120 330) rotate(-120) scale(.85)"/>
+  <use xlink:href="#petal" href="#petal" fill="url(#pg)" transform="translate(300 120) rotate(60) scale(.7)"/>
+  <use xlink:href="#petal" href="#petal" fill="url(#pg)" transform="translate(60 200) rotate(170) scale(.75)"/>
+</g>
+</svg>

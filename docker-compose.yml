@@ -1,0 +1,69 @@
+# Yumori en un solo servidor (EC2): API Python + presentación Next.js. Guía: docs/operations/docker-ec2.md
+#
+#   docker compose up -d --build
+#
+# Cómo se ven entre sí: ADR-009 obliga a que Next llame a Python por loopback (YUMORI_API_ORIGIN solo admite 127.0.0.1/localhost).
+# Por eso `web` usa la red de `api` (network_mode: service:api, el equivalente a dos contenedores de un mismo pod): para ambos,
+# 127.0.0.1:8000 es Python. Consecuencias:
+#   - Python escucha en 127.0.0.1 (el valor por defecto de YUMORI_HOST) y el puerto 8000 NO se publica ni se alcanza desde fuera.
+#   - Al exterior solo sale Caddy (80 y 443), que reenvía a Next por `api:3000`. El 3000 solo se abre en el loopback de la EC2, para pruebas.
+services:
+  api:
+    build: .
+    image: yumori-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"  # Next (corre en la red de este servicio), solo desde la propia EC2: curl -I http://127.0.0.1:3000. Nunca agregar el 8000.
+    volumes:
+      # La base va fuera de la imagen. Se monta la CARPETA, no el archivo: así reemplazar yumori.db se ve dentro sin reiniciar.
+      # Tiene que ser de lectura y escritura: db.connect() crea tablas/columnas que falten y Catalog escribe los alias de ids
+      # (listing.pid, product_alias), y SQLite necesita crear su archivo de journal en la misma carpeta. `:ro` no sirve.
+      # YUMORI_DATA permite apuntar a otra carpeta (pruebas con una base de prueba, sin tocar ./data).
+      # La carpeta debe existir y ser escribible por el UID 1000 (usuario del contenedor).
+      - "${YUMORI_DATA:-./data}:/app/data"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    read_only: true  # solo se escribe en ./data (volumen) y en /tmp
+    tmpfs: ["/tmp"]
+
+  web:
+    build: ./frontend
+    image: yumori-web
+    restart: unless-stopped
+    network_mode: "service:api"  # comparte la red de `api`; por eso no lleva `ports`
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      YUMORI_API_ORIGIN: "http://127.0.0.1:8000"  # es el valor por defecto; se deja explícito
+      YUMORI_URL: "${YUMORI_URL:-}"  # origen público (https://yumori.cl). Vacío = piloto: noindex y sin sitemap
+      GOOGLE_SITE_VERIFICATION: "${GOOGLE_SITE_VERIFICATION:-}"  # token de Search Console (opcional)
+      GA_MEASUREMENT_ID: "${GA_MEASUREMENT_ID:-}"  # Google Analytics (G-...); vacío = sin analítica. Solo carga si el visitante acepta
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    read_only: true  # next start solo escribe su caché en /tmp y .next/cache
+    tmpfs: ["/tmp", "/app/.next/cache:uid=1000,gid=1000"]
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    ports:
+      - "80:80"    # Let's Encrypt (desafío HTTP) y redirección a HTTPS
+      - "443:443"
+    environment:
+      YUMORI_DOMAIN: "${YUMORI_DOMAIN:-localhost}"  # se define en .env (ignorado por git); ver docs/operations/docker-ec2.md
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Los certificados deben sobrevivir a recrear el contenedor: Let's Encrypt limita los emitidos por dominio.
+      - caddy_data:/data
+      - caddy_config:/config
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
+
+volumes:
+  caddy_data:
+  caddy_config:

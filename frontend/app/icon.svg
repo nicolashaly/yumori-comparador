@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-21 -21 42 42">
+<!-- Ícono de Yumori: flor de cerezo con el pétalo de los fondos del sitio; uno destaca, como el mejor precio entre tiendas. -->
+<defs><path id="p" d="M0 0C-6-3-9-11-6-17C-4.5-20-2-21 0-18.5C2-21 4.5-20 6-17C9-11 6-3 0 0Z" transform="translate(0 -2.4) scale(.92)"/></defs>
+<g transform="translate(0 2.2)"><g fill="#EFA9BE"><use href="#p" transform="rotate(72)"/><use href="#p" transform="rotate(144)"/><use href="#p" transform="rotate(216)"/><use href="#p" transform="rotate(288)"/></g>
+<use href="#p" fill="#B0456A"/>
+<circle r="2.6" fill="#B0456A"/><circle r="1.1" fill="#FCE7DA"/></g>
+</svg>

@@ -1,0 +1,9 @@
+import type { Product } from '../lib/api';
+import { money } from '../lib/display';
+import ProductImage from './product-image';
+import { FavoriteButton } from './favorite-controls';
+
+export default function Card({ p, note }: { p: Product; note?: string }) {
+  const base = p.section === 'dermocosmetica' ? `/dermocosmetica${p.is_pack ? '/packs' : ''}` : p.is_pack ? '/packs' : '/explorar';
+  return <article className="card" data-product-id={p.id}><a className="card-link" href={`/p/${p.id}`}><div className="card-img skeleton done"><ProductImage src={p.image} alternatives={p.image_alternatives} name={p.name} />{p.has_deal && <span className="deal-pill" title={`Bajó ${p.drop_percent}% frente al historial`}>−{p.drop_percent}%</span>}</div><h3 className="card-name">{p.name}</h3></a><div className={`card-body${p.rating ? ' has-rating' : ''}`}>{p.brand_slug !== 'sin-marca' ? <a className="card-brand" href={`${base}?marca=${encodeURIComponent(p.brand_slug)}`}>{p.brand}</a> : <p className="card-brand">{p.brand}</p>}<p className="card-price">{p.card_prefix && <small>{p.card_prefix}</small>}<span data-display-price="" data-price-amount={p.display_price?.amount} data-currency={p.display_price?.currency}>{p.display_price ? money(p.display_price) : 'Ver precio'}</span>{p.has_deal && p.drop_reference_price && <s className="was"><span className="sr-only">Antes: </span>{money(p.drop_reference_price)}</s>}</p><p className="card-meta">{p.card_meta}</p>{note && <p className="card-note">{note}</p>}{p.rating && <span className="card-rating" aria-label={`Valoración ${p.rating.value} de 5, ${p.rating.reviews} reseñas en ${p.rating.store}`} title={`${p.rating.reviews} reseñas en ${p.rating.store}`}><i aria-hidden="true">★</i>{p.rating.value.toFixed(1).replace('.', ',')}</span>}</div><FavoriteButton id={p.id} name={p.name} variant="card" /></article>;
+}

@@ -1,0 +1,8 @@
+# Lo que Semgrep no analiza. Sintaxis como .gitignore. Guía: docs/operations/security-scanning.md
+# Al existir este archivo, reemplaza la lista por defecto de Semgrep (que omitía node_modules/, tests/, etc.),
+# por eso se repite aquí lo que sí hay que omitir.
+.git/
+node_modules/
+frontend/.next/
+tests/fixtures/
+data/

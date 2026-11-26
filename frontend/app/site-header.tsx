@@ -1,0 +1,18 @@
+'use client';
+import { usePathname } from 'next/navigation';
+import { useRef } from 'react';
+import type { SiteResponse } from '../lib/api';
+import Search from './search';
+import Icon from './ui-icon';
+import { FavoriteCount } from './favorite-controls';
+// Isotipo: el mismo dibujo que app/icon.svg (el favicon). Flor de cerezo con el pétalo de los fondos; uno destaca, como el mejor precio.
+function Mark() {
+  return <svg className="logo-mark" viewBox="-21 -21 42 42" aria-hidden="true" focusable="false"><defs><path id="logo-petal" d="M0 0C-6-3-9-11-6-17C-4.5-20-2-21 0-18.5C2-21 4.5-20 6-17C9-11 6-3 0 0Z" transform="translate(0 -2.4) scale(.92)" /></defs><g transform="translate(0 2.2)"><g fill="#EFA9BE">{[72, 144, 216, 288].map(a => <use key={a} href="#logo-petal" transform={`rotate(${a})`} />)}</g><use href="#logo-petal" fill="var(--accent)" /><circle r="2.6" fill="var(--accent)" /><circle r="1.1" fill="var(--peach)" /></g></svg>;
+}
+export default function SiteHeader({ data }: { data: SiteResponse | null }) {
+  const path = usePathname();
+  const menu = useRef<HTMLDetailsElement>(null);
+  const link = (href: string, label: string, cls = '') => <a href={href} className={cls} aria-current={path === href ? 'page' : undefined}>{label}</a>;
+  const event = data?.live_event;
+  return <header className="navbar"><div className="container"><a className="logo" href="/" aria-label="Yumori, inicio"><Mark /><span>Yumori</span></a>{path !== '/' && <Search />}<nav className="nav-links" aria-label="Principal">{event && <a className="nav-event" href={`/${event.slug}`} aria-label={`${event.name}: rebajas detectadas`}><span className={`ev-logo ev-${event.theme} ev-sm`}><svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{event.theme === "black-friday" ? <><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></> : <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/>}</svg><span>{event.name}</span></span></a>}<div className="nav-item hide-sm">{link('/explorar', 'Categorías')}<div className="dropdown"><div className="dropdown-panel">{data?.categories.map(cat => <a className="chip" key={cat.slug} href={`/explorar?cat=${cat.slug}`}>{cat.name} <span className="n">{cat.count.toLocaleString('es-CL')}</span></a>)}</div></div></div><div className="nav-item hide-sm">{link('/marcas', 'Marcas')}<div className="dropdown"><div className="dropdown-panel">{data?.home.top_brands.slice(0,5).map(brand => <a className="chip" key={brand.slug} href={`/explorar?marca=${brand.slug}`}>{brand.name} <span className="n">{brand.count}</span></a>)}<a className="chip chip-accent" href="/marcas">Mostrar todas</a></div></div></div>{link('/tiendas', 'Tiendas', 'hide-sm')}{link('/packs', 'Packs', 'hide-sm')}{link('/dermocosmetica', 'Dermocosmética', 'hide-sm')}<a href="/favoritos" aria-label="Favoritos" aria-current={path === '/favoritos' ? 'page' : undefined}><Icon name="heart" /><span className="label">Favoritos</span><FavoriteCount /></a></nav><details className="menu" ref={menu} onKeyDown={e => { if(e.key === 'Escape' && menu.current) { menu.current.open = false; menu.current.querySelector('summary')?.focus(); } }}><summary className="btn btn-ghost btn-icon" aria-label="Menú"><Icon name="menu" /></summary><div className="menu-panel">{data?.categories.map(cat => <a key={cat.slug} href={`/explorar?cat=${cat.slug}`}>{cat.name}</a>)}{link('/marcas','Marcas')}{link('/tiendas','Tiendas')}{link('/packs','Packs')}{link('/dermocosmetica','Dermocosmética')}</div></details></div></header>;
+}

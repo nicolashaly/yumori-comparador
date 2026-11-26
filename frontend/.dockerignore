@@ -1,0 +1,9 @@
+# Contexto de construcción de `web` (frontend/): las dependencias y la compilación se hacen dentro de la imagen.
+node_modules
+.next
+*.tsbuildinfo
+.npm-cache
+.env*
+tests
+Dockerfile
+.dockerignore

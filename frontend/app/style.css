@@ -1,0 +1,91 @@
+/* El diseño original se importa desde static/style.css, copiado sin cambios en original.css. */
+[hidden] { display: none !important; }
+.btn:disabled { opacity: .55; cursor: wait; }
+.suggest { list-style: none; margin: 0; }
+.suggest > li { margin: 0; }
+.search-error { position: absolute; top: 100%; background: var(--surface); padding: var(--s-2); z-index: 30; }
+.metadata { color: var(--ink-2); font-size: var(--fs-xs); margin-top: var(--s-5); }
+.favorite-error { position: relative; z-index: 3; color: var(--ink-2); font-size: var(--fs-xs); }
+.no-img { display: grid; height: 100%; place-items: center; color: var(--ink-2); font-size: var(--fs-xs); }
+.history-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.history-table th, .history-table td { text-align: left; padding: var(--s-3); border-bottom: 1px solid var(--line); }
+.history-table caption { text-align: left; margin-top: var(--s-4); font-weight: 600; }
+.history-ranges { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
+
+.product-subtitle { margin-top: var(--s-2); }
+.history-chart { margin: var(--s-4) 0; }
+/* rtl: en pantallas angostas el scroll parte en el borde derecho, o sea las fechas más recientes. */
+.history-chart-scroll { direction: rtl; overflow-x: auto; }
+.history-chart-scroll > svg { direction: ltr; display: block; width: 100%; min-width: 30rem; height: auto; font-size: 12px; }
+@media (max-width: 40rem) { .history-chart-scroll > svg { font-size: 15px; } }
+.history-chart .tick line { stroke: var(--line); }
+.history-chart .tick line:not(.v) { stroke-dasharray: 2 5; stroke-linecap: round; }
+.history-chart .tick line.v { stroke: var(--ink-2); stroke-opacity: .1; }
+.history-chart .tick line.v.major { stroke-opacity: .22; }
+.history-chart .tick, .history-chart .tick text { fill: var(--ink-2); }
+.history-chart .series path { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.history-chart .series path.area { fill: currentColor; fill-opacity: .05; stroke: none; }
+/* Punto con halo del color de fondo; hueco (sin stock) = fondo con borde de color. */
+.history-chart .pt circle { fill: currentColor; stroke: var(--surface); stroke-width: 2; transition: r var(--t-fast) var(--ease); }
+.history-chart .pt circle.out { fill: var(--surface); stroke: currentColor; }
+.history-chart .pt circle.hit { fill: transparent; stroke: none; }
+.history-chart .pt:hover circle:not(.hit) { r: 6; }
+.history-chart .guide { stroke: currentColor; stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; }
+.history-chart .bubble { opacity: 0; pointer-events: none; transition: opacity var(--t-fast) var(--ease); }
+.history-chart .bubble rect { fill: var(--ink); }
+.history-chart .bubble text { fill: var(--surface); font-size: 11px; }
+.history-chart .bubble .b-price { font-size: 13px; font-weight: 700; }
+.history-chart .pt:hover .guide { opacity: .45; }
+.history-chart .pt:hover .bubble { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .history-chart .pt circle, .history-chart .bubble { transition: none; } }
+.history-chart .s0 { color: var(--accent); } .history-chart .s1 { color: var(--lavender-ink); } .history-chart .s2 { color: var(--sage-ink); }
+.history-chart .s3 { color: var(--rose-ink); } .history-chart .s4 { color: var(--ink); } .history-chart .s5 { color: var(--ink-2); }
+.history-chart .d1 path { stroke-dasharray: 6 4; } .history-chart .d2 path { stroke-dasharray: 2 3; }
+.history-chart figcaption { font-size: var(--fs-sm); color: var(--ink-2); margin-top: var(--s-2); }
+.history-legend { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); list-style: none; margin: 0; padding: 0; color: var(--ink); }
+.history-legend li { display: flex; align-items: center; gap: var(--s-2); margin: 0; padding: var(--s-1) var(--s-3); border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.history-legend svg { width: 24px; height: 10px; flex: none; }
+/* Logo: isotipo SVG (site-header.tsx, igual a app/icon.svg) y nombre en Fraunces. Va aquí y no en original.css, que debe seguir igual a static/style.css. */
+.logo { gap: 0.4rem; font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; letter-spacing: -0.015em; line-height: 1; color: var(--rose-ink); border-radius: var(--r-sm); }
+.logo-mark { width: 1.9rem; height: 1.9rem; flex: none; transition: transform var(--t-fast) var(--ease); }
+.logo:hover .logo-mark { transform: rotate(-12deg); }
+@media (max-width: 640px) { .logo { font-size: 1.3rem; } .logo-mark { width: 1.65rem; height: 1.65rem; } }
+@media (prefers-reduced-motion: reduce) { .logo:hover .logo-mark { transform: none; } }
+/* El nombre en Fraunces ocupa ~38px más que el anterior: en tablet se aprieta el relleno de los enlaces para que la barra siga en una fila. */
+@media (min-width: 641px) and (max-width: 1024px) { .nav-links > a, .nav-item > a { padding: 0 var(--s-3); } }
+
+.cookie-pref { background: none; border: 0; padding: 0; margin-top: var(--s-3); font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.cookie-pref:hover { color: var(--accent); }
+.cookie-banner { position: fixed; left: var(--s-4); right: var(--s-4); bottom: var(--s-4); z-index: 60; max-width: 42rem; margin-inline: auto; display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; justify-content: space-between; padding: var(--s-4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: 0 8px 30px rgb(0 0 0 / .12); }
+.cookie-banner p { margin: 0; flex: 1 1 18rem; font-size: var(--fs-sm); }
+.cookie-banner div { display: flex; gap: var(--s-3); }
+.cookie-banner button { padding: var(--s-2) var(--s-4); border-radius: var(--r-md); border: 1px solid var(--accent); background: var(--surface); color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; }
+.cookie-banner button:last-child { background: var(--accent); color: var(--on-accent); }
+
+/* ---------- tarjetas de oferta por tienda (se carga después de original.css, que debe seguir igual a static/style.css) ---------- */
+.offer-meta { font-size: var(--fs-xs); color: var(--ink-2); margin-top: 2px; display: flex; gap: var(--s-3); flex-wrap: wrap; }
+.offer-meta b { font-weight: 600; color: var(--ink); }
+.tag-best { background: var(--sage-ink); color: #fff; padding: 1px var(--s-2); border-radius: var(--r-pill); }
+.status-ok { display: inline-flex; align-items: center; gap: .35em; }
+.status-ok::before { content: ''; width: .5em; height: .5em; border-radius: 50%; background: var(--sage-ink); }
+@media (max-width: 640px) {
+  .offer { grid-template-areas: "store price" "tags price" "meta meta" "btn btn"; grid-template-columns: 1fr auto; align-items: start; gap: var(--s-1) var(--s-3); padding: var(--s-4); }
+  .offer-main { display: contents; }
+  .offer-store { grid-area: store; font-size: 1.1rem; font-weight: 650; line-height: 1.25; }
+  .offer-sub { grid-area: tags; align-items: center; gap: var(--s-1) var(--s-2); margin-top: var(--s-1); }
+  .offer-price { grid-area: price; font-size: 1.4rem; line-height: 1.2; font-weight: 700; }
+  .offer-meta { grid-area: meta; margin-top: var(--s-2); padding-top: var(--s-2); border-top: 1px dashed var(--ink-2); border-top-color: color-mix(in srgb, var(--ink-2) 30%, transparent); line-height: 1.45; }
+  .offer .btn { grid-area: btn; margin-top: var(--s-3); }
+}
+
+/* /tiendas: una tarjeta por tienda chilena, con una franja de color por sección (rosa: belleza asiática; verde: dermocosmética) */
+.store-list-wide { grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--s-5); }
+.store-card-wide { display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-6) var(--s-5); }
+.store-card-wide:hover { background: var(--surface); transform: none; } /* la tarjeta no es un enlace: lo son sus franjas */
+.store-card-wide .store-card-head b { font-size: var(--fs-lg); }
+.store-lines { display: flex; flex-direction: column; gap: var(--s-2); }
+.store-line { display: block; padding: var(--s-2) var(--s-3); border-radius: var(--r-sm); font-size: var(--fs-sm); transition: filter var(--t-fast); }
+.store-line:hover { filter: brightness(0.95); }
+.store-card .store-line b { display: inline; font-weight: 700; }
+.store-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: auto; padding-top: var(--s-2); } /* abajo de la tarjeta, alineados entre tarjetas de distinto alto */
+.store-actions .btn-ghost { border: 1px solid var(--line); }

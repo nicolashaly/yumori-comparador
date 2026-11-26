@@ -1,0 +1,104 @@
+[
+ {
+  "productId": "444",
+  "productName": "Loción pH5 con urea 10% 200 mL",
+  "brand": "DERMO LISSE",
+  "brandId": 2000112,
+  "linkText": "locion-ph-5-emulsion-hidratante-ph-5-con-urea-200-ml",
+  "productReference": "CH5769",
+  "categoryId": "280",
+  "metaTagDescription": "Loción corporal pH5: hidratación y humectación diaria que respeta el equilibrio natural de tu piel. ¡Disponible en Farmacias de Dr. Simi!",
+  "link": "https://www.drsimi.cl/locion-ph-5-emulsion-hidratante-ph-5-con-urea-200-ml/p",
+  "categories": [
+   "/Belleza/Cuerpo/",
+   "/Belleza/"
+  ],
+  "categoriesIds": [
+   "/279/280/",
+   "/279/"
+  ],
+  "EANCode": [
+   "7804654810069"
+  ],
+  "description": "Loción pH5 ha sido formulada para acompañarte en tu rutina de cuidado diario y ayudar restaurar la barrera natural de tu piel para mantenerse equilibrada frente a los factores externos.<br>Loción corporal formulada con urea al 10% para las necesidades especiales de la piel sensible, que brinda humectación por 24 horas.<br>Siente una piel hidratada, suave y protegida cada día.<br>",
+  "items": [
+   {
+    "itemId": "444",
+    "name": "Loción pH5 con urea 10% 200 mL",
+    "ean": "",
+    "images": [
+     {
+      "imageUrl": "https://farmaciasdeldrsimicl.vteximg.com.br/arquivos/ids/156389/CH5769-1.jpg?v=637964773337400000"
+     },
+     {
+      "imageUrl": "https://farmaciasdeldrsimicl.vteximg.com.br/arquivos/ids/156390/CH5769-2.jpg?v=638767974951000000"
+     }
+    ],
+    "sellers": [
+     {
+      "sellerId": "1",
+      "sellerDefault": true,
+      "commertialOffer": {
+       "Price": 9800.0,
+       "ListPrice": 9800.0,
+       "PriceWithoutDiscount": 9800.0,
+       "AvailableQuantity": 99999,
+       "IsAvailable": true
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "productId": "1212",
+  "productName": "Sérum dermo renovador con colágeno hidrolizado 50 g",
+  "brand": "Eternal Secret",
+  "brandId": 2000044,
+  "linkText": "eternal-secret-serum-dermo-renovador-2185",
+  "productReference": "2185",
+  "categoryId": "285",
+  "metaTagDescription": "Sérum Dermo-Renovador Eternal Secret. Piel más firme, suave y visiblemente revitalizada. Ayuda a reducir signos de envejecimiento con colágeno.",
+  "link": "https://www.drsimi.cl/eternal-secret-serum-dermo-renovador-2185/p",
+  "categories": [
+   "/Belleza/Rostro/",
+   "/Belleza/"
+  ],
+  "categoriesIds": [
+   "/279/285/",
+   "/279/"
+  ],
+  "description": "Eternal Secret ® Sérum Dermo Renovador con colágeno hidrolizado aumenta la producción de colágeno y elastina para dar mayor firmeza y elasticidad, disminuyendo líneas de expresión y arrugas. Renueva y da firmeza, llegando a la capa más profunda de la piel.",
+  "items": [
+   {
+    "itemId": "1212",
+    "name": "Sérum dermo renovador con colágeno hidrolizado 50 g",
+    "ean": "",
+    "images": [
+     {
+      "imageUrl": "https://farmaciasdeldrsimicl.vteximg.com.br/arquivos/ids/159884/Serum-Primario-Frente---2185.png?v=638963220423930000"
+     },
+     {
+      "imageUrl": "https://farmaciasdeldrsimicl.vteximg.com.br/arquivos/ids/159885/Serum-Primario-Atras---2185.png?v=638963220424400000"
+     },
+     {
+      "imageUrl": "https://farmaciasdeldrsimicl.vteximg.com.br/arquivos/ids/159886/Serum-Secundario-Perspectiva-2---2185.png?v=638963220424570000"
+     }
+    ],
+    "sellers": [
+     {
+      "sellerId": "1",
+      "sellerDefault": true,
+      "commertialOffer": {
+       "Price": 12600.0,
+       "ListPrice": 12600.0,
+       "PriceWithoutDiscount": 12600.0,
+       "AvailableQuantity": 99999,
+       "IsAvailable": true
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

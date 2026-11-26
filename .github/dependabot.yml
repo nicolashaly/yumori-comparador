@@ -1,0 +1,72 @@
+# Actualizaciones automáticas de dependencias. Guía: docs/operations/security-scanning.md
+#
+# Esto es solo Dependabot "version updates". Las alertas de seguridad (Dependabot alerts) y las actualizaciones de
+# seguridad (security updates) NO se activan desde este archivo: hay que habilitarlas a mano en
+# Settings > Code security (ver la guía).
+version: 2
+
+updates:
+  # Frontend: dependencias de package-lock.json. Los cambios menores y de parche llegan juntos en un solo pull request
+  # para no inundar de avisos; los mayores (por ejemplo Next 17) llegan solos, cada uno con su revisión.
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels: [dependencies]
+    # Espera 7 días desde la publicación antes de proponer una versión nueva (defensa contra paquetes recién envenenados).
+    cooldown:
+      default-days: 7
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+
+  # Imágenes base de los Dockerfile: la API (python:3.12-slim) y el frontend (node:22-bookworm-slim).
+  # Cambiar de versión de Python o de Node es una decisión manual que también toca .github/workflows/ci.yml
+  # (python-version y node-version). Para Python, 3.12 -> 3.13 cuenta como salto "menor", así que en la API se ignoran
+  # los saltos mayores y menores; en el frontend (node:22 -> 24 es mayor) basta con ignorar los mayores.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels: [dependencies]
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  - package-ecosystem: docker
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels: [dependencies]
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Acciones de .github/workflows/ (actions/checkout, actions/setup-node, ...).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels: [dependencies]
+    cooldown:
+      default-days: 7

@@ -1,0 +1,198 @@
+# Escaneos de seguridad gratuitos de Yumori. Guía: docs/operations/security-scanning.md
+#
+# - Semgrep (SAST: busca patrones inseguros en el código), Trivy (dependencias, secretos, configuración e imágenes de
+#   Docker) y `npm audit` (dependencias de producción del frontend).
+# - Corre en cada pull request, en cada push a master, una vez por semana y a mano.
+# - Es independiente de ci.yml: NO es parte de la puerta del despliegue. Mientras la línea base no esté limpia, estos jobs
+#   pueden salir en rojo sin frenar nada; cuando estén limpios se exigen como "status checks" (ver la guía).
+# - El repositorio es privado: no se usa CodeQL ni se sube SARIF a la pestaña Security. Los resultados se leen en el
+#   registro de cada job.
+# - Son herramientas solo de CI: no cambian las dependencias de la aplicación (ADR-001, ADR-009).
+name: Security
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    # Lunes 09:00 UTC. Aparecen CVE nuevas en dependencias e imágenes sin que cambie una sola línea del código,
+    # así que un escaneo solo "al hacer push" no basta.
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+# Principio de mínimo privilegio: ningún job escribe en el repositorio ni usa el token para otra cosa que leer el código.
+permissions:
+  contents: read
+
+# Una ejecución por rama o pull request. Se cancela la anterior solo en pull requests.
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Trivy se corre desde su imagen oficial fijada por digest (inmutable), no con una Action de terceros: los tags de una
+  # Action pueden reescribirse después de que se publicaron, y un digest no. El digest sale de la API de Docker Hub.
+  # Para actualizarla: elegir una versión de al menos dos semanas de antigüedad y copiar su digest.
+  TRIVY_IMAGE: aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+
+jobs:
+  semgrep:
+    name: semgrep
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Se usa la imagen oficial en un contenedor (y no `pip install semgrep`) por tres razones: no hace falta instalar
+    # Python ni pip en el runner, la versión queda inmutable al fijar el digest (un pip sin hashes confía en PyPI en cada
+    # corrida) y es el modo que documenta Semgrep para GitHub Actions. 1.178.0 se publicó el 2026-09-23 (más de dos semanas).
+    container:
+      image: semgrep/semgrep:1.178.0@sha256:32e459968daabe7ab86968184a29109b9564aa00392401156f9788452b42786b
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # Gratis y sin cuenta ni token. Packs del registro público (los confirmé uno por uno; p/nextjs devuelve 0 reglas sin
+      # sesión, por eso no está). p/javascript y p/typescript cubren también el frontend Next/React.
+      # --metrics=off: no envía telemetría. --error: hay hallazgos => el job falla.
+      # --severity ERROR: por ahora solo rompen los hallazgos de alta confianza; WARNING e INFO no se muestran.
+      # Qué se omite (node_modules, .next, tests/fixtures, data) lo define .semgrepignore, en la raíz.
+      - name: Semgrep (análisis estático)
+        run: |
+          semgrep scan \
+            --config p/python \
+            --config p/javascript \
+            --config p/typescript \
+            --config p/react \
+            --config p/dockerfile \
+            --config p/github-actions \
+            --config p/secrets \
+            --metrics=off \
+            --disable-version-check \
+            --severity ERROR \
+            --error
+
+  trivy-fs:
+    name: trivy-fs
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # Escanea el repositorio tal como está en git: vulnerabilidades de dependencias (frontend/package-lock.json),
+      # secretos y errores de configuración (Dockerfile). Solo HIGH y CRITICAL; --ignore-unfixed oculta las
+      # vulnerabilidades que aún no tienen versión corregida (no se puede hacer nada). Con hallazgos, sale con código 1.
+      # El directorio de trabajo es el repo, así Trivy lee `.trivyignore` si existe.
+      # Sin confirmar: que la revisión de configuración de Trivy entienda docker-compose.yml (su documentación nombra
+      # Dockerfile, Kubernetes, Terraform y otros, pero no Compose). Los workflows no son de Trivy: los revisa Semgrep.
+      # --skip-dirs tests/fixtures es una suposición de sintaxis (ruta relativa a la raíz que se escanea).
+      - name: Trivy (dependencias, secretos y configuración)
+        run: |
+          mkdir -p "$RUNNER_TEMP/trivy-cache"
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/src:ro" \
+            -v "$RUNNER_TEMP/trivy-cache:/cache" \
+            -w /src \
+            "$TRIVY_IMAGE" \
+            fs \
+            --cache-dir /cache \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --skip-dirs tests/fixtures \
+            --exit-code 1 \
+            --no-progress \
+            .
+
+  trivy-images:
+    name: trivy-images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # incluye compilar Next dentro de la imagen web
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # Mismos comandos que docker-compose.yml. Cada imagen se guarda en un .tar y Trivy lo lee con --input: así el
+      # contenedor de Trivy no necesita el socket de Docker.
+      - name: Construir las imágenes
+        id: build
+        run: |
+          mkdir -p "$RUNNER_TEMP/images" "$RUNNER_TEMP/trivy-cache"
+          docker build -t yumori-api .
+          docker build -t yumori-web ./frontend
+          # Caddy no se construye aquí: es la imagen pública que usa docker-compose.yml (`caddy:2-alpine`, una etiqueta
+          # móvil). Cuesta un pull y un escaneo de ~50 MB, y es la única forma de enterarse si la imagen que se despliega
+          # arrastra una vulnerabilidad corregible.
+          docker pull caddy:2-alpine
+          docker save yumori-api -o "$RUNNER_TEMP/images/yumori-api.tar"
+          docker save yumori-web -o "$RUNNER_TEMP/images/yumori-web.tar"
+          docker save caddy:2-alpine -o "$RUNNER_TEMP/images/caddy.tar"
+
+      # Solo vulnerabilidades del sistema y de las librerías, HIGH y CRITICAL, y solo las que ya tienen versión corregida.
+      # Los tres escaneos corren aunque uno falle, para ver todos los resultados en la misma ejecución.
+      - name: Trivy yumori-api
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/src:ro" \
+            -v "$RUNNER_TEMP/images:/images:ro" \
+            -v "$RUNNER_TEMP/trivy-cache:/cache" \
+            -w /src \
+            "$TRIVY_IMAGE" \
+            image --input /images/yumori-api.tar \
+            --cache-dir /cache \
+            --scanners vuln \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --no-progress
+
+      - name: Trivy yumori-web
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/src:ro" \
+            -v "$RUNNER_TEMP/images:/images:ro" \
+            -v "$RUNNER_TEMP/trivy-cache:/cache" \
+            -w /src \
+            "$TRIVY_IMAGE" \
+            image --input /images/yumori-web.tar \
+            --cache-dir /cache \
+            --scanners vuln \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --no-progress
+
+      # Caddy es una imagen de terceros: los hallazgos están en su binario (golang.org/x/net) y se corrigen cuando su
+      # equipo publica una imagen nueva, no desde aquí. Por eso este escaneo informa pero no hace fallar el job
+      # (--exit-code 0). Los hallazgos siguen visibles en el registro; si hace falta, se puede volver a 1.
+      - name: Trivy caddy:2-alpine (solo informe)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/src:ro" \
+            -v "$RUNNER_TEMP/images:/images:ro" \
+            -v "$RUNNER_TEMP/trivy-cache:/cache" \
+            -w /src \
+            "$TRIVY_IMAGE" \
+            image --input /images/caddy.tar \
+            --cache-dir /cache \
+            --scanners vuln \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 0 \
+            --no-progress
+
+  npm-audit:
+    name: npm-audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"  # la misma versión que ci.yml y frontend/Dockerfile
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      # --ignore-scripts: nada de lo instalado ejecuta código en este job; aquí solo importa el lockfile.
+      - name: Instalar dependencias
+        working-directory: frontend
+        run: npm ci --ignore-scripts
+      # ADR-009 pide correr `npm audit` antes de publicar. Solo dependencias de producción y solo severidad high o superior.
+      # Consulta el registro de npm: si éste no responde, el job falla (no es un hallazgo).
+      - name: npm audit (producción, high o superior)
+        working-directory: frontend
+        run: npm audit --omit=dev --audit-level=high
