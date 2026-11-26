@@ -46,7 +46,7 @@ jobs:
     container:
       image: semgrep/semgrep:1.178.0@sha256:32e459968daabe7ab86968184a29109b9564aa00392401156f9788452b42786b
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Gratis y sin cuenta ni token. Packs del registro público (los confirmé uno por uno; p/nextjs devuelve 0 reglas sin
       # sesión, por eso no está). p/javascript y p/typescript cubren también el frontend Next/React.
       # --metrics=off: no envía telemetría. --error: hay hallazgos => el job falla.
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Escanea el repositorio tal como está en git: vulnerabilidades de dependencias (frontend/package-lock.json),
       # secretos y errores de configuración (Dockerfile). Solo HIGH y CRITICAL; --ignore-unfixed oculta las
       # vulnerabilidades que aún no tienen versión corregida (no se puede hacer nada). Con hallazgos, sale con código 1.
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30  # incluye compilar Next dentro de la imagen web
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Mismos comandos que docker-compose.yml. Cada imagen se guarda en un .tar y Trivy lo lee con --input: así el
       # contenedor de Trivy no necesita el socket de Docker.
       - name: Construir las imágenes
@@ -181,7 +181,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"  # la misma versión que ci.yml y frontend/Dockerfile
